@@ -1,9 +1,11 @@
+import java.util.Random;
+
 public class ex4_2 implements Runnable{
 
     static private final int threadPoolSize = 10;
 
-    static public int semaphore = 0;
-    static private boolean
+    static private int semaphore = threadPoolSize - 1;
+    static private boolean terminate = false;
     static public boolean condNegBefore = false;
     static public boolean condNowNeg = false;
     private static final Object lock = new Object();
@@ -13,31 +15,63 @@ public class ex4_2 implements Runnable{
         if (threadName.equals("t1")) {
             this.signal();
         } else {
-            this.wait();
+            this.waitThread();
         }
     }
 
     public void signal() {
-        synchronized (lock) {
-            while (!condNowNeg) {
+        Random rand = new Random();
+        while (!(terminate && semaphore == threadPoolSize - 1)) {
+            synchronized (lock) {
+                try {
+                    while (semaphore == threadPoolSize - 1) {
+                        lock.wait();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
+                try {
+                    Thread.sleep(10 * (rand.nextInt(10) + 1));
+
+                } catch (Exception e) {
+                    System.out.println("Thread interrupted.");
+                }
+
+                semaphore += 1;
+                System.out.println("Released 1 thread, now " + (semaphore + 1) + " threads available.");
+                if (semaphore >= 0) {
+                    lock.notifyAll();
+                }
             }
-            lock.notifyAll();
         }
     }
 
-    public void wait() {
-        synchronized (lock) {
-            try {
-                while (!cond) {
-                    lock.wait();
+    public void waitThread() {
+        Random rand = new Random();
+        for (int i = 0; i < 50; i++) {
+            synchronized (lock) {
+                try {
+                    while (semaphore < 0) {
+                        lock.wait();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 
-            System.out.println(i);
+                try {
+                    Thread.sleep(10 * (rand.nextInt(10) + 1));
+                    semaphore -= 1;
+                    System.out.println("Consumed 1 thread, now " + (semaphore + 1) + " threads available.");
+                    if (semaphore < threadPoolSize - 1) {
+                        lock.notifyAll();
+                    }
+                } catch (Exception e) {
+                    System.out.println("Thread interrupted.");
+                }
+            }
         }
+        terminate = true;
     }
 
 
