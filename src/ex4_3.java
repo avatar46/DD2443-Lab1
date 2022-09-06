@@ -13,22 +13,31 @@ public class ex4_3 implements Runnable{
 
     public void run() {
         Integer threadName = Integer.valueOf(Thread.currentThread().getName());//get the current thread's name
-        for (int i = 0; i < rounds; i++) {
-           this.think(threadName);
+//        for (int i = 0; i < rounds; i++) {
+//            this.think(threadName);
             this.eat(threadName);
 //            System.out.println(i + " for " + threadName);
-        }
+//        }
     }
 
     public void eat(int threadName) {
         Random rand = new Random();
         System.out.println("Phi num: " + threadName + " wants to begin eating.");
         while (true) {
+            // if no available chopsticks
             while ((chops[threadName % phiNum]) || (chops[(threadName + 1) % phiNum])) {
                 // do nothing
+                try {
+                    Thread.sleep(1);
+                } catch (Exception e) {
+                    System.out.println("Thread interrupted.");
+                }
             }
+
             synchronized (lock) {
+                // otherwise
                 if (!((chops[threadName % phiNum]) || (chops[(threadName + 1) % phiNum]))) {
+                    // get chopsticks
                     chops[threadName % phiNum] = true;
                     chops[(threadName + 1) % phiNum] = true;
                     System.out.println("Phi num: " + threadName + " grabbed chop no. " + threadName % phiNum + " and no. " + (threadName + 1) % phiNum);
@@ -46,19 +55,27 @@ public class ex4_3 implements Runnable{
         chops[threadName % phiNum] = false;
         chops[(threadName + 1) % phiNum] = false;
         r++;
-        System.out.println("Phi num: " + threadName + " done" + r + "th eating.");
+        System.out.print("Phi num: " + threadName + " done" + r + "th eating.");
+//        for (int i = 0; i < phiNum; i++) {
+//            System.out.print(" " + i + chops[i]);
+//        }
+        System.out.println();
 //        lock.notifyAll();
-//        this.think(threadName);
+
+        // done eating then think
+        this.think(threadName);
     }
 
     public void think(int threadName) {
         Random rand = new Random();
+        // think
         try {
             Thread.sleep(10 * (rand.nextInt(20) + 1));
         } catch (Exception e) {
             System.out.println("Thread interrupted.");
         }
-//        this.eat(threadName);
+        // then eat
+        this.eat(threadName);
     }
 
     public static void main(String args[]) {
