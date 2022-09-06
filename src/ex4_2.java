@@ -30,14 +30,16 @@ public class ex4_2 implements Runnable{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+            }
 
-                try {
-                    Thread.sleep(10 * (rand.nextInt(10) + 1));
+            try {
+                Thread.sleep(5 * (rand.nextInt(20) + 1));
 
-                } catch (Exception e) {
-                    System.out.println("Thread interrupted.");
-                }
+            } catch (Exception e) {
+                System.out.println("Thread interrupted.");
+            }
 
+            synchronized (lock) {
                 semaphore += 1;
                 System.out.println("Released 1 thread, now " + (semaphore + 1) + " threads available.");
                 if (semaphore >= 0) {
@@ -59,15 +61,20 @@ public class ex4_2 implements Runnable{
                     throw new RuntimeException(e);
                 }
 
-                try {
-                    Thread.sleep(10 * (rand.nextInt(10) + 1));
-                    semaphore -= 1;
-                    System.out.println("Consumed 1 thread, now " + (semaphore + 1) + " threads available.");
-                    if (semaphore < threadPoolSize - 1) {
-                        lock.notifyAll();
-                    }
-                } catch (Exception e) {
-                    System.out.println("Thread interrupted.");
+            }
+
+            try {
+                Thread.sleep(5 * (rand.nextInt(20) + 1));
+
+            } catch (Exception e) {
+                System.out.println("Thread interrupted.");
+            }
+
+            synchronized (lock) {
+                semaphore -= 1;
+                System.out.println("Consumed 1 thread, now " + (semaphore + 1) + " threads available.");
+                if (semaphore < threadPoolSize - 1) {
+                    lock.notifyAll();
                 }
             }
         }
