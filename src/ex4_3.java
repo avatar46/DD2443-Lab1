@@ -40,7 +40,7 @@ public class ex4_3 implements Runnable{
                     // get chopsticks
                     chops[threadName % phiNum] = true;
                     chops[(threadName + 1) % phiNum] = true;
-                    System.out.println("Phi num: " + threadName + " grabbed chop no. " + threadName % phiNum + " and no. " + (threadName + 1) % phiNum);
+                    System.out.println("Phi num: " + threadName + " grabbed chop no." + threadName % phiNum + " and no." + (threadName + 1) % phiNum);
                     break;
                 }
             }
@@ -55,7 +55,7 @@ public class ex4_3 implements Runnable{
         chops[threadName % phiNum] = false;
         chops[(threadName + 1) % phiNum] = false;
         r++;
-        System.out.print("Phi num: " + threadName + " done" + r + "th eating.");
+        System.out.print("Phi num: " + threadName + " done " + r + "th eating.");
 //        for (int i = 0; i < phiNum; i++) {
 //            System.out.print(" " + i + chops[i]);
 //        }
