@@ -60,7 +60,6 @@ public class ex4_2 implements Runnable{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-
             }
 
             try {
